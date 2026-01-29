@@ -11,15 +11,15 @@ import ui
 import questions
 import save
 import crud
+import firestore 
 
 
 def initialize_system():
     """
-    Placeholder for Firebase initialization.
-    Later this will load credentials and create the Firestore client.
+    Initializes Firestore using the firestore.py module.
     """
-    print("Initializing system...")
-    db = None  # Placeholder until Firestore is added
+    ui.print_header("Initializing Cloud Database")
+    db = firestore.initialize_firestore()
     return db
 
 

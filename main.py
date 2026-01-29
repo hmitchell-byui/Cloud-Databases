@@ -35,7 +35,7 @@ def check_if_user_exists():
     return choice == "y"
 
 
-def onboarding_flow(existing_users_count):
+def onboarding_flow(db, existing_users_count):
     """
     Handles new user creation:
     - Ask questions
@@ -52,7 +52,7 @@ def onboarding_flow(existing_users_count):
     confirmed = save.confirm_changes(user_data)
 
     if confirmed:
-        crud.create_user(user_data)
+        crud.create_user(db,user_data)
         ui.success("User created successfully.")
         return user_data
     else:
@@ -60,7 +60,7 @@ def onboarding_flow(existing_users_count):
         return None
 
 
-def crud_menu_loop():
+def crud_menu_loop(db):
     """
     Main CRUD loop for returning users.
     """
@@ -70,7 +70,7 @@ def crud_menu_loop():
         choice = ui.crud_menu()
 
         if choice == "1":
-            data = crud.retrieve_all()
+            data = crud.retrieve_all(db)
             ui.display_data(data)
 
         elif choice == "2":
@@ -78,7 +78,7 @@ def crud_menu_loop():
             updates = ui.ask_for_update_fields()
             staged = save.confirm_changes(updates)
             if staged:
-                crud.update_user(user_id, updates)
+                crud.update_user(db, user_id, updates)
                 ui.success("User updated.")
             else:
                 ui.warning("Update canceled.")
@@ -87,7 +87,7 @@ def crud_menu_loop():
             user_id = ui.ask_for_user_id()
             staged = save.confirm_delete(user_id)
             if staged:
-                crud.delete_user(user_id)
+                crud.delete_user(db, user_id)
                 ui.success("User deleted.")
             else:
                 ui.warning("Delete canceled.")
@@ -101,9 +101,6 @@ def crud_menu_loop():
 
 
 def main():
-    """
-    Full program execution.
-    """
     db = initialize_system()
 
     # Placeholder: count existing users
@@ -118,6 +115,7 @@ def main():
             ui.success("Redirecting to main menu...")
 
     crud_menu_loop()
+
 
 
 if __name__ == "__main__":

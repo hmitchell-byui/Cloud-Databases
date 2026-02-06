@@ -1,10 +1,20 @@
-# This is for the questionaire that fuels the database
-
 # questions.py
-# Handles all user input and returns a structured dictionary of user data.
+# Handles all user input for creating new user records.
+# This module contains no database logic—only input collection and structuring.
+
 
 def ask_basic_info():
-    """Collects basic user information from prompts."""
+    """
+    Collects basic user information through input prompts.
+
+    Returns:
+        A dictionary containing:
+            f_name, l_name, email, phone, sex, title, height, weight
+
+    Notes:
+        - Height and weight are validated as floats.
+        - All other fields are stored as strings.
+    """
     print("\n--- New User Setup ---")
 
     f_name = input("First name: ").strip()
@@ -14,7 +24,7 @@ def ask_basic_info():
     sex = input("Sex (M/F): ").strip()
     title = input("Title (Mr, Ms, Dr, etc.): ").strip()
 
-    # Height and weight with basic validation
+    # Height validation
     while True:
         try:
             height = float(input("Height (in inches): "))
@@ -22,6 +32,7 @@ def ask_basic_info():
         except ValueError:
             print("Please enter a valid number.")
 
+    # Weight validation
     while True:
         try:
             weight = float(input("Weight (in pounds): "))
@@ -29,7 +40,6 @@ def ask_basic_info():
         except ValueError:
             print("Please enter a valid number.")
 
-# Return collected data as a dictionary
     return {
         "f_name": f_name,
         "l_name": l_name,
@@ -43,7 +53,15 @@ def ask_basic_info():
 
 
 def assign_clearance():
-    """Asks the user for a clearance level and returns it."""
+    """
+    Prompts the user to select a clearance level.
+
+    Returns:
+        A string: "admin", "user", or "guest".
+
+    Behavior:
+        - Loops until a valid selection is made.
+    """
     print("\nClearance Levels:")
     print("1. Admin")
     print("2. User")
@@ -64,11 +82,20 @@ def assign_clearance():
 
 def generate_user_id(clearance, existing_users_count):
     """
-    Auto-assigns a user_id based on clearance level and existing user count.
-    - System administrator is always user_id = 0
-    - Admins start at 1000
-    - Users start at 2000
-    - Guests start at 3000
+    Generates a user_id based on clearance level and existing user count.
+
+    Args:
+        clearance: "admin", "user", or "guest".
+        existing_users_count: Number of users currently in Firestore.
+
+    Returns:
+        An integer user_id.
+
+    Rules:
+        - Admin IDs start at 1000
+        - User IDs start at 2000
+        - Guest IDs start at 3000
+        - Each new user increments the offset
     """
     if clearance == "admin":
         return 1000 + existing_users_count
@@ -80,11 +107,19 @@ def generate_user_id(clearance, existing_users_count):
 
 def collect_new_user(existing_users_count):
     """
-    Full pipeline for creating a new user:
-    - Ask basic info
-    - Ask clearance
-    - Assign user_id
-    - Return full user dictionary
+    Full pipeline for creating a new user record.
+
+    Steps:
+        1. Collect basic info
+        2. Ask for clearance level
+        3. Generate user_id
+        4. Combine all fields into a single dictionary
+
+    Args:
+        existing_users_count: Number of users currently in Firestore.
+
+    Returns:
+        A complete user_data dictionary ready for Firestore insertion.
     """
     user_data = ask_basic_info()
     clearance = assign_clearance()
